@@ -1,0 +1,37 @@
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/resources/css/kissani.css" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>          
+
+<script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/prototype.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/scriptaculous.js?load=effects,builder"></script>
+
+<script type="text/javascript" language="javascript" src="<%=request.getContextPath()%>/resources/js/lytebox.js"></script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/resources/css/lytebox.css" type="text/css" media="screen" />
+<link href='https://fonts.googleapis.com/css?family=Fresca&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<link rel="shortcut icon" href="favicon.png" />
+<link rel="stylesheet" type="text/css" href="resources/css/gxt-all.css" />
+<script language='javascript' src='resources/flash/swfobject.js'></script>
+</head>
+<body>
+<div class="body">
+<div class="ads">
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+  {lang: 'fi'}
+</script>
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-4787664620958084";
+/* Kissani */
+google_ad_slot = "2108110282";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+<div id="top_tabs"><ul>
+<li><a href="showSelf.do">Kissasi</a></li>
+<li><a href="showFriends.do">Ystäväsi</a></li>
+<li id="recommend">Suosittele: <g:plusone href="https://kissani4.appspot.com"></g:plusone>
+</li></ul></div>
+<div class="content">

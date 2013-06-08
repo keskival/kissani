@@ -1,0 +1,104 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name='gwt:property' content='locale=fi'>
+
+<title>Kissani</title>
+
+<link rel="stylesheet" type="text/css" href="/resources/css/kissani.css" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>          
+
+<script type="text/javascript" src="/resources/js/prototype.js"></script>
+<script type="text/javascript" src="/resources/js/scriptaculous.js?load=effects,builder"></script>
+
+<script type="text/javascript" language="javascript" src="/resources/js/lytebox.js"></script>
+<link rel="stylesheet" href="/resources/css/lytebox.css" type="text/css" media="screen" />
+<link href='https://fonts.googleapis.com/css?family=Fresca&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<link rel="shortcut icon" href="favicon.png" />
+
+<script>
+  function handleStatus(response) {
+	     console.log('getstatus response : ' + response);
+		  if (response.status === 'connected') {
+		    // the user is logged in and has authenticated your
+		    // app, and response.authResponse supplies
+		    // the user's ID, a valid access token, a signed
+		    // request, and the time the access token 
+		    // and signed request each expire
+		    console.log("Connected: response: " + response);
+		    location.href = 'showPerson.html';
+		  } else if (response.status === 'not_authorized') {
+		    // the user is logged in to Facebook, 
+		    // but has not authenticated your app
+			    console.log("Not authorized, response: " + response);
+		  } else {
+		    // the user isn't logged in to Facebook.
+			    console.log("Not logged in, response: " + response);
+		  }
+  }
+  
+  function getStatus() {
+	 	 FB.getLoginStatus(handleStatus);
+	  }
+</script>
+</head>
+<body>
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+	    
+	    FB.Event.subscribe('auth.authResponseChange', function(response) {
+			handleStatus(response);
+	    });
+	    
+    FB.init({
+      appId      : '174781145893917', // App ID
+      channelUrl : '//2-dot-kissani4.appspot.com/channel.html', // Channel File
+      status     : true, // check login status
+      cookie     : true, // enable cookies to allow the server to access the session
+      xfbml      : true  // parse XFBML
+    });
+
+    getStatus();
+  };
+
+  // Load the SDK Asynchronously
+  (function(d){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "https://connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+  }(document));
+
+</script>
+<div class="body">
+<div class="ads">
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+  {lang: 'fi'}
+</script>
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-4787664620958084";
+/* Kissani */
+google_ad_slot = "2108110282";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+<div class="content">
+
+<div class="fb-login-button"  data-scope="user_photos,user_photo_video_tags,publish_stream,offline_access">Login with Facebook</div>
+<div id="contentContainer"></div>
+</div>
+</div>
+</body>
+</html>
+
+
+
