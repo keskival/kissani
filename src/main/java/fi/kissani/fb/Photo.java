@@ -49,7 +49,15 @@ public class Photo {
 
     @Override
     public String toString() {
-        return "[icon: " + this.icon + ", link: " + this.link + ", createdTime: " + this.createdTime + ", id: "
-                + this.id + ", tags: " + this.tags.toString();
+        return this.getLink() + "|" + this.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    public boolean equals(Photo rhs) {
+        return this.id == rhs.getId();
     }
 }
