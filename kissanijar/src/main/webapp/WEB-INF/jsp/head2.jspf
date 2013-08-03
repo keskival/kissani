@@ -1,15 +1,31 @@
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/resources/css/kissani.css" />
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>          
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/prototype.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/scriptaculous.js?load=effects,builder"></script>
 
-<script type="text/javascript" language="javascript" src="<%=request.getContextPath()%>/resources/js/lytebox.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/lytebox.js"></script>
 <link rel="stylesheet" href="<%=request.getContextPath()%>/resources/css/lytebox.css" type="text/css" media="screen" />
-<link href='https://fonts.googleapis.com/css?family=Fresca&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<link href="https://fonts.googleapis.com/css?family=Fresca&subset=latin,latin-ext" rel="stylesheet" type="text/css">
 <link rel="shortcut icon" href="favicon.png" />
-<link rel="stylesheet" type="text/css" href="resources/css/gxt-all.css" />
-<script language='javascript' src='resources/flash/swfobject.js'></script>
+<script type="text/javascript" src="resources/flash/swfobject.js"></script>
+<script type="text/javascript"><!--
+function debug(msg) {
+	console.debug(msg);
+}
+
+function getAccessToken() {
+	return FB.getAuthResponse().accessToken;
+}
+
+function uid() {
+	return FB.getAuthResponse().userID;
+}
+
+function getCatDefaultPhotoUrl(cat) {
+	return "https://graph.facebook.com/" + cat.defaultPhoto + "/picture?access_token=" + getAccessToken();
+}
+--></script>
 </head>
 <body>
 <div class="body">

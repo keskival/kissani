@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jdoconfig xmlns="http://java.sun.com/xml/ns/jdo/jdoconfig"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="http://java.sun.com/xml/ns/jdo/jdoconfig">
+    xsi:schemaLocation="http://java.sun.com/xml/ns/jdo/jdoconfig
+        http://java.sun.com/xml/ns/jdo/jdoconfig_3_0.xsd">
 
     <persistence-manager-factory name="transactions-optional">
         <property name="javax.jdo.PersistenceManagerFactoryClass"
@@ -12,38 +13,8 @@
         <property name="javax.jdo.option.RetainValues" value="true"/>
         <property name="datanucleus.appengine.autoCreateDatastoreTxns" value="true"/>
         <!-- <property name="datanucleus.cache.level2.type" value="ehcache"/> -->
-		<property name="datanucleus.cache.level2.cacheName" value="default"/>
+		<property name="datanucleus.cache.level2.cacheName" value="jcache"/>
 		<property name="datanucleus.cache.level2.configurationFile" value="ehcache.xml"/>
 		<property name="datanucleus.storeManagerType" value="appengine"/>
     </persistence-manager-factory>
-
-	<package name="fi.kissani.dao">
-    <class name="Cat">
-        <field name="id" primary-key="true">
-            <column name="ID"/>
-        </field>
-        <field name="name">
-            <column name="NAME" length="64" jdbc-type="VARCHAR"/>
-        </field>
-        <field name="nickName">
-            <column name="NICKNAME" length="64" jdbc-type="VARCHAR"/>
-        </field>
-        <field name="photos">
-            <column name="PICS" length="512" jdbc-type="VARCHAR"/>
-        </field>
-        <field name="owners">
-            <column name="OWNERS" length="512" jdbc-type="VARCHAR"/>
-        </field>
-    </class>
-    <class name="Person">
-        <field name="id" primary-key="true">
-            <column name="ID"/>
-        </field>
-        <field name="cats" persistence-modifier="persistent">
-            <collection element-type="java.lang.Long"/>
-            <join/>
-            <element column="CAT_ID"/>
-        </field>
-    </class>
-    </package>
 </jdoconfig>

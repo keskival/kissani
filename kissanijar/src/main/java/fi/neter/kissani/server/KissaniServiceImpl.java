@@ -11,21 +11,19 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
-import fi.neter.kissani.BaseGWTService;
-import fi.neter.kissani.client.KissaniService;
 import fi.neter.kissani.dao.Cat;
 import fi.neter.kissani.dao.CatJdoDao;
 import fi.neter.kissani.dao.PersonJdoDao;
@@ -39,7 +37,7 @@ import fi.neter.kissani.shared.ProfileTO;
 
 @Controller
 @RequestMapping("/kissani/kis")
-public class KissaniServiceImpl extends BaseGWTService implements KissaniService {
+public class KissaniServiceImpl {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = LoggerFactory.getLogger(KissaniServiceImpl.class);
@@ -51,9 +49,6 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
     private PersonJdoDao personDao;
     
     @Autowired
-    private CacheManager cacheManager;
-
-    @Autowired
     private FBService fbService;
 
     @Autowired
@@ -61,18 +56,14 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
     
     @PostConstruct
     public void postConstruct() {
-    	Cache catCache = cacheManager.getCache("catCache");
-    	Cache personCache = cacheManager.getCache("personCache");
-    	
-    	catDao.setCache(catCache);
-    	personDao.setCache(personCache);
     }
     
-    @Override
-    public void setDefaultPhoto(Long catId, Long photoId) {
+	@RequestMapping(value="/setDefaultPhoto/{catId}/{photoId}", method = RequestMethod.GET)
+    public void setDefaultPhoto(HttpServletRequest req, @PathVariable Long catId,
+    		@PathVariable Long photoId) {
         Cat cat = catDao.getCat(catId);
 
-        Profile profile = getProf(getMe());
+        Profile profile = getProf(req, getMe(req));
 
         boolean canEdit = canEditCat(cat, profile);
 
@@ -82,13 +73,14 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
         }
     }
 
-    @Override
-    public Boolean canEditPerson(Long id) {
-        Profile profile = getProf(getMe());
-        return canEditPerson(id, profile);
+	@RequestMapping(value="/canEditPerson/{personId}", method = RequestMethod.GET)
+	@ResponseBody
+    public Boolean canEditPerson(HttpServletRequest req, @PathVariable Long personId) {
+        Profile profile = getProf(req, getMe(req));
+        return canEditPerson(personId, profile);
     }
 
-    public Boolean canEditPerson(Long id, Profile profile) {
+    private Boolean canEditPerson(Long id, Profile profile) {
         if (profile.getId().equals(id)) {
             logger.debug("Can edit person " + id + ".");
             return true;
@@ -99,17 +91,14 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
         }
     }
 
-    @Override
-    public Boolean canEditCat(CatTO cat) {
-        Profile profile = getProf(getMe());
+	@RequestMapping(value="/canEditCat/{catId}", method = RequestMethod.GET)
+	@ResponseBody
+    public Boolean canEditCat(HttpServletRequest req, @PathVariable Long catId) {
+        Profile profile = getProf(req, getMe(req));
+        Cat cat = catDao.getCat(catId);
         return canEditCat(cat, profile);
     }
 
-    private Boolean canEditCat(Cat cat) {
-        Profile profile = getProf(getMe());
-        return canEditCat(cat, profile);
-    }
-    
     private Boolean canEditCat(Set<Long> owners, Long catId, Profile profile) {
         if (owners.contains(profile.getId())) {
             logger.debug("Can edit cat " + catId + ".");
@@ -121,28 +110,23 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
         }
     }
     
-    private Boolean canEditCat(CatTO cat, Profile profile) {
-        Set<Long> owners = cat.getOwners();
-        return canEditCat(owners, cat.getId(), profile);
-    }
-
     private Boolean canEditCat(Cat cat, Profile profile) {
         Set<Long> owners = cat.getOwnersAsSet();
         return canEditCat(owners, cat.getId(), profile);
     }
     
-    @Override
-    public void addFriendForCat(Long catId, Long friendId) {
-    	HttpServletRequest req = this.getThreadLocalRequest();
+	@RequestMapping(value="/addFriendForCat/{catId}/{friendId}", method = RequestMethod.GET)
+    public void addFriendForCat(HttpServletRequest req, @PathVariable Long catId,
+    		@PathVariable Long friendId) {
         // Retrieve the person (From FB)
-        Profile profile = getProf(getMe());
+        Profile profile = getProf(req, getMe(req));
         if (profile == null) {
         	FB.clearApiToken(req);
             throw new RuntimeException("Token not valid.");
         }
 
+        boolean canEdit = canEditCat(req, friendId);
         Cat friend = catDao.getCat(friendId);
-        boolean canEdit = canEditCat(friend);
 
         if (canEdit) {
         	// Update the cat friends.
@@ -160,22 +144,21 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
         }
     }
 
-    @Override
-    public void addOwnerForCat(Long ownerId, Long catId) {
-    	HttpServletRequest req = this.getThreadLocalRequest();
+	@RequestMapping(value="/addOwnerForCat/{ownerId}/{catId}", method = RequestMethod.GET)
+    public void addOwnerForCat(HttpServletRequest req, Long ownerId, Long catId) {
         // Retrieve the person (From FB)
-        Profile profile = getProf(getMe());
+        Profile profile = getProf(req, getMe(req));
         if (profile == null) {
         	FB.clearApiToken(req);
             throw new RuntimeException("Token not valid.");
         }
 
+        boolean canEdit = canEditCat(req, catId);
         Cat cat = catDao.getCat(catId);
-        boolean canEdit = canEditCat(cat);
 
         if (canEdit) {
         	// Update the owners.
-        	List<Long> personsCats = personDao.getCats(ownerId);
+        	List<Long> personsCats = personDao.getPersonOrCreate(ownerId).getCats();
         	if (personsCats == null) {
         		return;
         	}
@@ -188,22 +171,21 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
         }
     }
 
-    @Override
-    public void removeOwnerFromCat(Long ownerId, Long catId) {
-    	HttpServletRequest req = this.getThreadLocalRequest();
+	@RequestMapping(value="/removeOwnerFromCat/{ownerId}/{catId}", method = RequestMethod.GET)
+    public void removeOwnerFromCat(HttpServletRequest req, Long ownerId, Long catId) {
         // Retrieve the person (From FB)
-        Profile profile = getProf(getMe());
+        Profile profile = getProf(req, getMe(req));
         if (profile == null) {
         	FB.clearApiToken(req);
             throw new RuntimeException("Token not valid.");
         }
 
+        boolean canEdit = canEditCat(req, catId);
         Cat cat = catDao.getCat(catId);
-        boolean canEdit = canEditCat(cat);
 
         if (canEdit) {
         	// Update the owners.
-        	List<Long> personsCats = personDao.getCats(ownerId);
+        	List<Long> personsCats = personDao.getPersonOrCreate(ownerId).getCats();
         	if ((personsCats == null) || (ownerId == profile.getId())) {
         		// You can't remove yourself.
         		return;
@@ -217,11 +199,11 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
         }
     }
 
-    @Override
-    public void editCat(Long id, String nickName, String name) {
-        Cat cat = catDao.getCat(id);
+	@RequestMapping(value="/editCat/{catId}/{nickName}/{name}", method = RequestMethod.GET)
+    public void editCat(HttpServletRequest req, Long catId, String nickName, String name) {
+        Cat cat = catDao.getCat(catId);
 
-        Profile profile = getProf(getMe());
+        Profile profile = getProf(req, getMe(req));
 
         boolean canEdit = canEditCat(cat, profile);
 
@@ -238,38 +220,38 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
             ArrayList<Profile> persons = new ArrayList<Profile>();
 
             for (Long personFbId : cat.getOwnersAsSet()) {
-                Profile owner = getProf(String.valueOf(personFbId));
+                Profile owner = getProf(req, String.valueOf(personFbId));
                 persons.add(owner);
             }
         }
     }
 
-    @Override
-    public void deleteCat(Long id) {
+	@RequestMapping(value="/deleteCat/{catId}", method = RequestMethod.GET)
+    public void deleteCat(HttpServletRequest req, Long catId) {
         // Retrieve the cat
-        Cat cat = catDao.getCat(id);
+        Cat cat = catDao.getCat(catId);
 
-        Profile profile = getProf(getMe());
+        Profile profile = getProf(req, getMe(req));
 
         if (canEditCat(cat, profile)) {
             Set<Long> owners = cat.getOwnersAsSet();
 
             if (owners.size() > 1) {
                 // Only remove this owner.
-                removeOwnerFromCat(id, profile.getId());
-            }
-            else {
-                catDao.delete(id);
-                personDao.delete(profile.getId(), id);
+                removeOwnerFromCat(req, catId, profile.getId());
+            } else {
+            	// Was the last owner.
+                catDao.delete(catId);
+                personDao.delete(profile.getId(), catId);
             }
         }
     }
 
-    @Override
-    public void removePhoto(Long catId, Long photoId) {
-        Cat cat = catDao.getCat(catId);
+	@RequestMapping(value="/removePhoto/{catId}/{photoId}", method = RequestMethod.GET)
+    public void removePhoto(HttpServletRequest req, Long catId, Long photoId) {
 
-        if (canEditCat(cat)) {
+        if (canEditCat(req, catId)) {
+            Cat cat = catDao.getCat(catId);
             Set<Photo> photos = cat.getPhotosAsSet();
             Set<Photo> newPhotos = new HashSet<Photo>();
             for (Photo photo: photos) {
@@ -282,9 +264,7 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
         }
     }
     
-    private String getMe() {
-    	HttpServletRequest req = this.getThreadLocalRequest();
-
+    private String getMe(HttpServletRequest req) {
     	FBCookie id = fb.requireLogin(req);
 
     	if (id != null) {
@@ -294,12 +274,11 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
     	return "me";
     }
     
-    @Override
-    public void addCat(String nickName,
+	@RequestMapping(value="/addCat/{nickName}/{name}", method = RequestMethod.GET)
+    public void addCat(HttpServletRequest req, String nickName,
             String name) {
-    	HttpServletRequest req = this.getThreadLocalRequest();
 
-        Profile profile = getProf(getMe());
+        Profile profile = getProf(req, getMe(req));
 
         Cat cat = catDao.newCat();
         cat.setName(name);
@@ -323,27 +302,23 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
         ArrayList<Profile> persons = new ArrayList<Profile>();
 
         for (Long personFbId : cat.getOwnersAsSet()) {
-            Profile owner = getProf(String.valueOf(personFbId));
+            Profile owner = getProf(req, String.valueOf(personFbId));
             persons.add(owner);
         }
     }
 
-    @Override
-    public void tagScan(Long id) {
-    	HttpServletRequest req = this.getThreadLocalRequest();
-    	
-        Cat cat = catDao.getCat(id);
-        if (canEditCat(cat)) {
+	@RequestMapping(value="/tagScan/{catId}", method = RequestMethod.GET)
+    public void tagScan(HttpServletRequest req, Long catId) {
+        if (canEditCat(req, catId)) {
         	Queue queue = QueueFactory.getDefaultQueue();
             FBCookie session = fb.requireLogin(req);
-            queue.add(withUrl("/tagScanTask.task").param("catId", String.valueOf(id))
+            queue.add(withUrl("/tagScanTask.task").param("catId", String.valueOf(catId))
             		.param("accessToken", session.getAccessToken())
             		);
         }
     }
 
-    private Profile getProf(String id) {
-    	HttpServletRequest req = this.getThreadLocalRequest();
+    private Profile getProf(HttpServletRequest req, String id) {
         FBCookie session = fb.requireLogin(req);
         if (id.equals("me")) {
         	id = String.valueOf(session.getFbId());
@@ -351,7 +326,7 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
     	String accessToken = session.getAccessToken();
 
     	Profile prof = fbService.getProfile(id, accessToken);
-		List<Long> cats = personDao.getCats(Long.valueOf(id));
+		List<Long> cats = personDao.getPersonOrCreate(Long.valueOf(id)).getCats();
 		
 		List<Cat> catList = new ArrayList<Cat>();
 
@@ -364,9 +339,10 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
 		return prof;
     }
     
-    @Override
-    public ProfileTO getProfile(String id) {
-    	return getProf(id).getProfileTO();
+	@RequestMapping(value="/tagScan/{personId}", method = RequestMethod.GET)
+	@ResponseBody
+    public ProfileTO getProfile(HttpServletRequest req, String personId) {
+    	return getProf(req, personId).getProfileTO();
     }
 
     public void setCatDao(CatJdoDao catDao) {
@@ -381,7 +357,8 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
         this.fbService = fbService;
     }
 
-	@Override
+	@RequestMapping(value="/getCat/{catId}", method = RequestMethod.GET)
+	@ResponseBody
 	public CatTO getCat(Long catId) {
 		CatTO result = catDao.getCat(catId).getCatTO();
 		// Prefetching friends.
@@ -397,17 +374,14 @@ public class KissaniServiceImpl extends BaseGWTService implements KissaniService
 		return result;
 	}
 
-	@Override
 	public Collection<Long> getCatsOrCreate(Long id) {
-		return personDao.getCatsOrCreate(id);
+		return personDao.getPersonOrCreate(id).getCats();
 	}
 
-	@Override
 	public Collection<Long> getCats(Long id) {
-		return personDao.getCats(id);
+		return personDao.getPersonOrCreate(id).getCats();
 	}
 
-	@Override
 	public void persistCat(CatTO cat) {
 		catDao.persistCat(new Cat(cat));
 	}

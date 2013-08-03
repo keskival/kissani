@@ -14,12 +14,8 @@
 		<spring.version>3.0.3.RELEASE</spring.version>
 		<aspectj.version>1.6.3</aspectj.version>
 		<vaadin.version>6.2.0</vaadin.version>
-		<gae.version>1.6.6</gae.version>
-		<gxt.version>[3.0.0-SNAPSHOT,)</gxt.version>
+		<gae.version>1.8.2</gae.version>
 
-		<!-- GWT version -->
-
-		<gwt.version>2.4.0</gwt.version>
 		<!-- This is just for "eclipse:eclipse" goal to always attempt downloading 
 			sources -->
 		<downloadSources>true</downloadSources>
@@ -29,7 +25,7 @@
 
 		<!-- Upload to http://test.latest.<applicationName>.appspot.com by default -->
 		<gae.application.version>test</gae.application.version>
-		<gae.home>/opt/gae/appengine-java-sdk-1.6.6</gae.home>
+		<gae.home>/opt/appengine-java-sdk-1.8.2</gae.home>
 	</properties>
 
 	<modules>
@@ -85,28 +81,6 @@
 
 	</repositories>
 	<dependencies>
-		<!-- GWT dependencies -->
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-dev</artifactId>
-			<version>${gwt.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-servlet</artifactId>
-			<version>${gwt.version}</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>${gwt.version}</version>
-			<scope>compile</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-tools-sdk</artifactId>
@@ -148,26 +122,6 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.googlecode.ehcache-spring-annotations</groupId>
-			<artifactId>ehcache-spring-annotations</artifactId>
-			<version>1.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache</artifactId>
-			<version>2.5.1</version>
-			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>com.extjs</groupId>
-			<artifactId>gxt</artifactId>
-			<version>${gxt.version}</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<!-- <dependency> <groupId>commons-dbcp</groupId> <artifactId>commons-dbcp</artifactId> 
-			<version>1.4</version> </dependency> -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

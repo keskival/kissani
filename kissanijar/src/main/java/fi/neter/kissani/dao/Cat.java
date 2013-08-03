@@ -20,11 +20,11 @@ import fi.neter.kissani.shared.PhotoTO;
 public class Cat implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@PrimaryKey
+	@PrimaryKey(column = "ID")
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;
-    
-    @Persistent
+
+	@Persistent
     private Text photos = new Text("");
     
     @Persistent

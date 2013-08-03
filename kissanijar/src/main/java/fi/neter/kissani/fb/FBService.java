@@ -87,7 +87,7 @@ public class FBService {
 
 		for (Friend friend : profile.getFriends().getData()) {
 			Long friendId = friend.getId();
-			List<Long> cats = personDao.getCats(friendId);
+			List<Long> cats = personDao.getPerson(friendId).getCats();
 			if (cats != null) {
 				friendsInApp.add(friend);
 			}

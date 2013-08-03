@@ -15,27 +15,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>kissani4</name>
 	<url>http://maven.apache.org</url>
-	<properties>
-		<spring.version>3.0.3.RELEASE</spring.version>
-		<aspectj.version>1.6.3</aspectj.version>
-		<vaadin.version>6.2.0</vaadin.version>
-		<gae.version>1.6.6</gae.version>
-		<gxt.version>[3.0.0-SNAPSHOT,)</gxt.version>
-
-		<!-- GWT version -->
-
-		<gwt.version>2.4.0</gwt.version>
-		<!-- This is just for "eclipse:eclipse" goal to always attempt downloading 
-			sources -->
-		<downloadSources>true</downloadSources>
-
-		<!-- Specify AppEngine version for your project. It should match SDK version 
-			pointed to by ${gae.home} property (Typically, one used by your Eclipse plug-in) -->
-
-		<!-- Upload to http://test.latest.<applicationName>.appspot.com by default -->
-		<gae.application.version>test</gae.application.version>
-		<gae.home>/opt/gae/appengine-java-sdk-1.6.6</gae.home>
-	</properties>
 
 	<dependencies>
 		<dependency>
@@ -69,24 +48,6 @@
 				<configuration>
 					<outputDirectory>${basedir}/war/WEB-INF/lib</outputDirectory>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.4.0</version>
-				<!-- <dependencies> <dependency> <groupId>com.google.gwt</groupId> <artifactId>gwt-dev</artifactId> 
-					<version>${gwt.version}</version> <scope>test</scope> </dependency> </dependencies> -->
-				<executions>
-					<execution>
-						<configuration>
-							<module>fi.neter.kissani.Kissani</module>
-							<webappDirectory>${basedir}/war</webappDirectory>
-						</configuration>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>

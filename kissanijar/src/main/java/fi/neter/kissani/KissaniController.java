@@ -38,7 +38,6 @@ public class KissaniController {
         cat.setPhotosAsSet(fbService.getPhotosOfCat(cat, accessToken));
         catDao.persistCat(cat);
     }
-    
 
     @RequestMapping("/tagScanTask.task")
 	@ResponseStatus(HttpStatus.OK)
